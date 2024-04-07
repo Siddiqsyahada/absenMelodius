@@ -457,6 +457,27 @@ btnSimpan.addEventListener('click', function() {
                 console.error('Error:', error);
             });
             swal("Succes", "Berhasil Menyimpan Data Absensi pada bulan " + tanggal, "success");
+            const TokenFonnte = "V6rzVmfP4p8Xt8U8QxiP";
+            const url = "https://api.fonnte.com/send";
+            const options = {
+                method: "POST",
+                headers: {
+                "Authorization": TokenFonnte,
+                "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                target: DataNomorHP[messageArray[1]],
+                message: `
+                Rekapitulasi Absen Tanggal ${tanggal} :
+                -masih dalam tahap develop
+                `
+                })
+            };
+            
+            fetch(url, options)
+                .then(response => response.json())
+                .then(data => console.log(data)) // Anda dapat melakukan sesuatu dengan respon di sini
+                .catch(error => console.error('Error:', error)); 
         } else {
           swal("Silahkan Simpan Lagi Jika sudah Yakin");
         }
