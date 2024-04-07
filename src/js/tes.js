@@ -40,8 +40,8 @@ var data = {
   // var dataKelompok = kelompokkanDataBerdasarkanTanggal(data);
   // console.log(dataKelompok)
 
-const sheetName = 'oktober'
-const tanggal = 'Kamis/3-4-2024'
+const sheetName = 'Mar'
+const tanggal = 'Mar 9'
 const nama = "Siddiiq"
 function generateKehadiran() {
   const options = ["I", "S", "✔️", "A"]; // Pilihan kehadiran yang mungkin
@@ -57,7 +57,7 @@ function generateKehadiran() {
 }
 
 
-const kehadiran = generateKehadiran()
+const kehadiran = ['A', 'A', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H']
 
 fetch('https://script.google.com/macros/s/AKfycbyap6NPMSjH6FI2R-Genpx83fzNDenULA8FOXmaK1texVt32npRw4sHhfUunbeTMCqp/exec', {
     redirect: "follow",

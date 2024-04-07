@@ -7,11 +7,14 @@ const signInButton = document.getElementById('signIn');
 const errorMessage = document.getElementById('errorMessage');
 
 dashboard.style.display = 'none'
-formLogin.style.display = 'block'
+formLogin.style.display = 'none'
 
 if(localStorage.getItem('email')){
     formLogin.style.display = 'none';
     dashboard.style.display = 'block';
+}else{
+    dashboard.style.display = 'none'
+    formLogin.style.display = ''
 }
 
 function onLogin() {
@@ -257,9 +260,10 @@ headers: {
     dataTersimpan = data
     console.log("fetching data Succes")
     fetchSucces = true
-    namaAnggota = data['april'][0][0]['nama']
+    namaAnggota = data['Apr'][0][0]['nama']
     document.getElementById("loading").classList.add("hidden");
     tampilkanSemuaData()
+    localStorage.setItem("namaAnggota",namaAnggota)
 })
 .catch(error => {
     console.error('Error:', error);
