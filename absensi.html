@@ -390,7 +390,44 @@ function createTdRadio(value, id) {
     return td;
 }
 
+function formatToListNama(nama){
+    return nama.map((nama, index) => `${index + 1}. ${nama}`).join('\n');
+
+}
+
+function ubahFormatTanggal(tanggal) {
+    const [bulanAngka, tanggalAngka, tahun] = tanggal.split('/');
+    const hari = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+    const bulan = parseInt(bulanAngka) - 1;
+    const tanggalBaru = `${hari[new Date(`${tahun}-${bulanAngka}-${tanggalAngka}`).getDay()]} ${tanggalAngka}`;
+    return tanggalBaru;
+}
+
+async function sendToStaff(message) {
+    const TokenFonnte = "V6rzVmfP4p8Xt8U8QxiP";
+      const url = "https://api.fonnte.com/send";
+      const options = {
+        method: "POST",
+        headers: {
+          "Authorization": TokenFonnte,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          target: '62895602585445',
+          message: message
+        })
+      };
+    
+      fetch(url, options)
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error('Error:', error));
+}
+
 const btnSimpan = document.getElementById('btnSimpan');
+
+
+
 btnSimpan.addEventListener('click', function() {
     const tanggalElement = document.getElementById('tanggalInput').value;
     if (!tanggalElement) {
@@ -415,7 +452,10 @@ btnSimpan.addEventListener('click', function() {
             const dataKehadiranLengkap = [];
             const dataKehadiran = [];
             const radios = document.querySelectorAll('input[type="radio"]');
-            
+            const hadirHariIni = []
+            const sakitHariIni = []
+            const izinHariIni = []
+            const alfaHariIni = []
             arrayNama.forEach((nama, index) => {
                 let keterangan = '✔️'; // Nilai default jika tidak ada tombol radio yang tercentang
                 const radiosForNama = document.querySelectorAll(`input[name="keterangan_${index}"]:checked`);
@@ -423,26 +463,50 @@ btnSimpan.addEventListener('click', function() {
                 if (radiosForNama.length > 0) {
                     keterangan = radiosForNama[0].value;
                 }
+
+                if(keterangan === '✔️'){
+                    hadirHariIni.push(nama)
+                }
+                else if(keterangan === 'S'){
+                    sakitHariIni.push(nama)
+                }
+                else if(keterangan === 'I'){
+                    izinHariIni.push(nama)
+                }
+                else if(keterangan === 'A'){
+                    alfaHariIni.push(nama)
+                }else{
+                    alert('ada yang error')
+                }
                 
                 dataKehadiranLengkap.push({ nama, keterangan });
                 dataKehadiran.push(keterangan);
             });
             
-            // Fungsi untuk mengubah format tanggal dari "bulan/tanggal/tahun" menjadi "Mar 28 2024"
-            function ubahFormatTanggal(tanggal) {
-                const [bulanAngka, tanggalAngka, tahun] = tanggal.split('/');
-                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
-                const bulan = months[parseInt(bulanAngka) - 1];
-                const tanggalBaru = `${bulan} ${tanggalAngka}`;
-                return tanggalBaru;
-            }
-
             const tanggal = ubahFormatTanggal(tanggalElement);
+            const date = new Date(tanggalElement)
             const arrTanggalElement = tanggalElement.split('/');
+            const namaHari = ['Minggu','Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
             const sheetName = months[arrTanggalElement[0] - 1];
+            const rekapitulasiHariIni = `Rekapitulasi Absen Latihan ${namaHari[date.getDay()]},${date.getDate()} ${namaBulan[date.getMonth() + 1]} ${date.getFullYear()}
+_*Hadir*_:
+${formatToListNama(hadirHariIni)}
 
+_*Sakit*_:
+${formatToListNama(sakitHariIni)}
 
+_*Izin*_:
+${formatToListNama(izinHariIni)}
+
+_*Alfa*_:
+${formatToListNama(alfaHariIni)}` 
+            console.log(dataKehadiranLengkap)
+            console.log(rekapitulasiHariIni)
+            sendToStaff(rekapitulasiHariIni)
+            
+            
             fetch('https://script.google.com/macros/s/AKfycbyap6NPMSjH6FI2R-Genpx83fzNDenULA8FOXmaK1texVt32npRw4sHhfUunbeTMCqp/exec', {
                 redirect: "follow",
                 method: 'POST',
@@ -452,32 +516,11 @@ btnSimpan.addEventListener('click', function() {
                 },
                 body: JSON.stringify({ "sheetName": sheetName, "tanggal": tanggal, "nama": "anggotaMelodius", "kehadiran": dataKehadiran })
             }).then(response => response.json()).then(data => {
-                console.log('Berhasil Menyimpan Absen', data);
             }).catch(error => {
                 console.error('Error:', error);
             });
             swal("Succes", "Berhasil Menyimpan Data Absensi pada bulan " + tanggal, "success");
-            const TokenFonnte = "V6rzVmfP4p8Xt8U8QxiP";
-            const url = "https://api.fonnte.com/send";
-            const options = {
-                method: "POST",
-                headers: {
-                "Authorization": TokenFonnte,
-                "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                target: DataNomorHP[messageArray[1]],
-                message: `
-                Rekapitulasi Absen Tanggal ${tanggal} :
-                -masih dalam tahap develop
-                `
-                })
-            };
             
-            fetch(url, options)
-                .then(response => response.json())
-                .then(data => console.log(data)) // Anda dapat melakukan sesuatu dengan respon di sini
-                .catch(error => console.error('Error:', error)); 
         } else {
           swal("Silahkan Simpan Lagi Jika sudah Yakin");
         }

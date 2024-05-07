@@ -432,11 +432,11 @@ function tampilkanData(bulanYangDipilih){
 
         }
 
-        myChart.data.labels = labelTanggal;
-        myChart.data.datasets[0].data = totalHadir;
-        myChart.data.datasets[1].data = totalSakit;
-        myChart.data.datasets[2].data = totalIzin;
-        myChart.data.datasets[3].data = totalAlfa;
+        myChart.data.labels = labelTanggal.reverse();
+        myChart.data.datasets[0].data = totalHadir.reverse();
+        myChart.data.datasets[1].data = totalSakit.reverse();
+        myChart.data.datasets[2].data = totalIzin.reverse();
+        myChart.data.datasets[3].data = totalAlfa.reverse();
 
         myChart.update();
 }
@@ -447,11 +447,11 @@ function tampilkanData(bulanYangDipilih){
 const myChart = new Chart(document.getElementById('order-chart'), {
     type: 'line',
     data: {
-        labels: labelTanggal,
+        labels: labelTanggal.reverse(),
         datasets: [
             {
                 label: 'Hadir',
-                data: totalHadir,
+                data: totalHadir.reverse(),
                 borderWidth: 1,
                 fill: true,
                 pointBackgroundColor: 'rgb(59, 130, 246)',
@@ -461,7 +461,7 @@ const myChart = new Chart(document.getElementById('order-chart'), {
             },
             {
                 label: 'Sakit',
-                data: totalSakit,
+                data: totalSakit.reverse(),
                 borderWidth: 1,
                 fill: true,
                 pointBackgroundColor: 'rgb(255, 255, 0)',
@@ -471,7 +471,7 @@ const myChart = new Chart(document.getElementById('order-chart'), {
             },
             {
                 label: 'Izin',
-                data: totalIzin,
+                data: totalIzin.reverse(),
                 borderWidth: 1,
                 fill: true,
                 pointBackgroundColor: 'rgb(16, 185, 129)',
@@ -481,7 +481,7 @@ const myChart = new Chart(document.getElementById('order-chart'), {
             },
             {
                 label: 'Alfa',
-                data: totalAlfa,
+                data: totalAlfa.reverse(),
                 borderWidth: 1,
                 fill: true,
                 pointBackgroundColor: 'rgb(244, 63, 94)',
