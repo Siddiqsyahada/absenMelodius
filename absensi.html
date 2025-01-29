@@ -391,7 +391,11 @@ function createTdRadio(value, id) {
 }
 
 function formatToListNama(nama){
-    return nama.map((nama, index) => `${index + 1}. ${nama}`).join('\n');
+    if(nama.length < 1){
+        return "-"
+    }else{
+        return nama.map((nama, index) => `${index + 1}. ${nama}`).join('\n');
+    }
 
 }
 
@@ -404,7 +408,7 @@ function ubahFormatTanggal(tanggal) {
 }
 
 async function sendToStaff(message) {
-    const TokenFonnte = "V6rzVmfP4p8Xt8U8QxiP";
+    const TokenFonnte = "kbUDeo6N5xQAgme7sJH8";
       const url = "https://api.fonnte.com/send";
       const options = {
         method: "POST",
@@ -413,7 +417,7 @@ async function sendToStaff(message) {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          target: '62895602585445',
+          target: '120363391676381750@g.us', 
           message: message
         })
       };
@@ -490,7 +494,7 @@ btnSimpan.addEventListener('click', function() {
             const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
             const sheetName = months[arrTanggalElement[0] - 1];
-            const rekapitulasiHariIni = `Rekapitulasi Absen Latihan ${namaHari[date.getDay()]},${date.getDate()} ${namaBulan[date.getMonth() + 1]} ${date.getFullYear()}
+            const rekapitulasiHariIni = `Rekapitulasi Absen Latihan ${namaHari[date.getDay()]},${date.getDate()} ${namaBulan[date.getMonth() + 1]} ${date.getFullYear()} (_Kelas 10 dan 11_)
 _*Hadir*_:
 ${formatToListNama(hadirHariIni)}
 
@@ -501,7 +505,10 @@ _*Izin*_:
 ${formatToListNama(izinHariIni)}
 
 _*Alfa*_:
-${formatToListNama(alfaHariIni)}` 
+${formatToListNama(alfaHariIni)}
+
+Berikut link file Kehadiran lengkapnya :
+https://docs.google.com/spreadsheets/d/1pl0D4NyboRX7co0xBxsRrfncXAaOZ5j00gAtGPOchRg/edit?usp=sharing` 
             console.log(dataKehadiranLengkap)
             console.log(rekapitulasiHariIni)
             sendToStaff(rekapitulasiHariIni)
@@ -519,7 +526,7 @@ ${formatToListNama(alfaHariIni)}`
             }).catch(error => {
                 console.error('Error:', error);
             });
-            swal("Succes", "Berhasil Menyimpan Data Absensi pada bulan " + tanggal, "success");
+            swal("Succes", "Berhasil Menyimpan Data Absensi pada " + tanggal, "success");
             
         } else {
           swal("Silahkan Simpan Lagi Jika sudah Yakin");

@@ -193,19 +193,19 @@ function generateRandomData(n) {
     return data
 }
 
-let namaAnggota = []
+let namaAnggota = [];
 let totalHadir = [];
 let totalSakit = [];
 let totalIzin = [];
 let totalAlfa = [];
-let labelTanggal = []
-let kehadiranPerOrg = []
-let topHadir = []
-let topSakit = []
-let topIzin = []
-let topAlfa = []
-let chartSemuaBulan = []
-
+let labelTanggal = [];
+let kehadiranPerOrg = [];
+let topHadir = [];
+let topSakit = [];
+let topIzin = [];
+let topAlfa = [];
+let chartSemuaBulan = [];
+let dataTersimpan = "";
 
 function findTopLeaderboard(data, find) {
     const counts = data.map((str, index) => {
@@ -221,77 +221,65 @@ function findTopLeaderboard(data, find) {
         total: item.total
     }));
 
-    if (find === "A") {
-        topAlfa = top;
-    } else if (find === "✔️") {
-        topHadir = top;
-    } else if (find === "S") {
-        topSakit = top;
-    } else if (find === "I") {
-        topIzin = top;
-    } else {
-        char = find;
-    }
-}
-let dataTersimpan =  ""
-
-
-function formatTanggal(data){
-    for (let k = 0; k < data.length - 1; k++) {
-        const dateString = data[k][0]['tanggal'];
-        const date = new Date(dateString);
-        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        const month = monthNames[date.getMonth()];
-        const day = date.getDate();
-        labelTanggal.push(`${month} ${day}`);
+    switch (find) {
+        case "A":
+            topAlfa = top;
+            break;
+        case "✔️":
+            topHadir = top;
+            break;
+        case "S":
+            topSakit = top;
+            break;
+        case "I":
+            topIzin = top;
+            break;
+        default:
+            char = find;
     }
 }
 
 document.getElementById("loading").classList.remove("hidden");
-let fetchSucces = false
+let fetchSucces = false;
 
 fetch('https://script.google.com/macros/s/AKfycbyap6NPMSjH6FI2R-Genpx83fzNDenULA8FOXmaK1texVt32npRw4sHhfUunbeTMCqp/exec', {
-redirect: "follow",
-method: 'GET',
-headers: {
-    "Content-Type": "text/plain;charset=utf-8",
-},
-}).then(response => response.json()).then(data => {
-    dataTersimpan = data
-    console.log("fetching data Succes")
-    fetchSucces = true
-    namaAnggota = data['Apr'][0][0]['nama']
+    redirect: "follow",
+    method: 'GET',
+    headers: {
+        "Content-Type": "text/plain;charset=utf-8",
+    },
+})
+.then(response => response.json())
+.then(data => {
+    dataTersimpan = data;
+    console.log("fetching data Succes");
+    fetchSucces = true;
+    namaAnggota = data['Jan'][0][0]['nama'];
     document.getElementById("loading").classList.add("hidden");
-    tampilkanSemuaData()
-    localStorage.setItem("namaAnggota",namaAnggota)
+    tampilkanSemuaData();
+    localStorage.setItem("namaAnggota", namaAnggota);
+    console.log(namaAnggota)
 })
 .catch(error => {
     console.error('Error:', error);
 });
 
-let value = ''
+let value = '';
 
 const dropdown = document.getElementById("pilihan");
 dropdown.addEventListener("change", function() {
     value = dropdown.value;
-    if(value === "semua"){
-        totalHadir = [];
-        totalSakit = [];
-        totalIzin = [];
-        totalAlfa = [];
-        labelTanggal = []
-        topAlfa = []
-        kehadiranPerOrg = []
-        tampilkanSemuaData()
-    }else{
-        totalHadir = [];
-        totalSakit = [];
-        totalIzin = [];
-        totalAlfa = [];
-        labelTanggal = []
-        topAlfa = []
-        kehadiranPerOrg = []
-        tampilkanData(value)
+    totalHadir = [];
+    totalSakit = [];
+    totalIzin = [];
+    totalAlfa = [];
+    labelTanggal = [];
+    topAlfa = [];
+    kehadiranPerOrg = [];
+    if (value === "semua") {
+        tampilkanSemuaData();
+    } else {
+        tampilkanData(value);
     }
 });
 
@@ -326,132 +314,152 @@ function tampilkanSemuaData(){
     myChart.update();
 }
 
-function tampilkanData(bulanYangDipilih){
-    if(fetchSucces){
+function tampilkanData(bulanYangDipilih) {
+    if (fetchSucces) {
         document.getElementById("loading").classList.remove("hidden");
     }
-    if(fetchSucces){
+    if (fetchSucces) {
         document.getElementById("loading").classList.add("hidden");
     }
-        const bulan = bulanYangDipilih
-        const dataSatuBulan = dataTersimpan[bulan];
-        if (dataTersimpan && dataTersimpan[bulan]) {
-
-            for (let i = 0; i < dataSatuBulan.length; i++) {
-                const rekap = dataSatuBulan[i][0];
-                if (rekap && rekap.kehadiran) {
-                    const rekapPerTgl = rekap.kehadiran;
-                    const gabungan = rekapPerTgl.map((elemA, index) => {
-                        if (elemA !== undefined && kehadiranPerOrg[index] !== undefined) {
-                            return elemA + kehadiranPerOrg[index];
-                        } else {
-                            return elemA; // Atau return elemA + 0; jika Anda ingin menambahkan 0 pada elemen yang tidak terdefinisi
-                    }});
-                    
-                    kehadiranPerOrg = gabungan;
-                    
-                    let countHadir = 0;
-                    let countSakit = 0;
-                    let countIzin = 0;
-                    let countAlfa = 0;
-
-                    for (let j = 0; j < rekapPerTgl.length; j++) {
-
-                        if (rekapPerTgl[j] === "✔️") {
-                            countHadir += 1
-                        } else if (rekapPerTgl[j] === "S") {
-                            countSakit += 1
-                        } else if (rekapPerTgl[j] === "I") {
-                            countIzin += 1
-                        } else if (rekapPerTgl[j] === "A") {
-                            countAlfa += 1
-                        } else {
-
-                        }
-                    }
-                    totalHadir.push(countHadir)
-                    totalSakit.push(countSakit)
-                    totalIzin.push(countIzin)
-                    totalAlfa.push(countAlfa)
-                }
-            }
-            const hadir = document.getElementById('hadir')
-            const sakit = document.getElementById('sakit')
-            const izin = document.getElementById('izin')
-            const alfa = document.getElementById('alfa')
-            hadir.textContent = totalHadir.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-            sakit.textContent = totalSakit.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-            izin.textContent = totalIzin.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-            alfa.textContent = totalAlfa.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-        } else {
-            console.error(`Data bulan ${bulanYangDipilih} tidak tersedia.`);
-        }
-        // menambahkan tanggal ke char sekaligus format
-        formatTanggal(dataTersimpan[bulan])
-        // menambahkan jumlah latihabn
-        const jumlahLatihan = document.getElementById('jumlahLatihan')
-        jumlahLatihan.textContent = labelTanggal.length
-
-        // mencari top Leaderboard Alfa
-
-        findTopLeaderboard(kehadiranPerOrg,"A")
-        const topAlfaIndex = topAlfa.map(item => item.index)
-        const topAlfaCount = topAlfa.map(item => item.count)
-        for (let i = 1; i <= 5; i++) {
-            const persentase = 100 - Math.round(topAlfaCount[i-1] / labelTanggal.length * 100)
-            const topAlfa = document.getElementById(`topAlfa${i}`).getElementsByTagName("th")[0];
-            const totalAlfa = document.getElementById(`totalTopAlfa${i}`)
-            const textPersentaseTopAlfa = document.getElementById(`textPersentaseTopAlfa${i}`)
-            const persentaseTopAlfa = document.getElementById(`persentaseTopAlfa${i}`)     
-            function generateColor(percent) {
-                let color = ''
-                if(percent < 30){
-                    color = "rgb(255, 0, 0)"
-                }else if(percent >= 30 && percent < 50){
-                    color = "rgb(255, 255, 0)"
-                }else if(percent >= 50 && percent < 85){
-                    color = "rgb(59, 130, 246)"
-                }else{
-                    color = "rgb(16, 185, 129)"
-                }
-                return color;
-            }
+    
+    const bulan = bulanYangDipilih;
+    const dataSatuBulan = dataTersimpan[bulan];
+    
+    if (dataTersimpan && dataTersimpan[bulan]) {
+        for (let i = 0; i < dataSatuBulan.length; i++) {
+            const rekap = dataSatuBulan[i][0];
             
-            if(isNaN(persentase)){
-                topAlfa.textContent = namaAnggota[i - 1];
-                totalAlfa.textContent = 0
-                textPersentaseTopAlfa.textContent = "0%"
-                persentaseTopAlfa.style = `width : 0%`
-            }else{
-                topAlfa.textContent = namaAnggota[topAlfaIndex[i - 1]];
-                totalAlfa.textContent = topAlfaCount[i - 1]
-                textPersentaseTopAlfa.textContent = persentase + "%"
-                persentaseTopAlfa.style = `width : ${persentase}%`
-                persentaseTopAlfa.style.backgroundColor = generateColor(persentase)
+            if (rekap && rekap.kehadiran) {
+                const rekapPerTgl = rekap.kehadiran;
+                const gabungan = rekapPerTgl.map((elemA, index) => {
+                    if (elemA !== undefined && kehadiranPerOrg[index] !== undefined) {
+                        return elemA + kehadiranPerOrg[index];
+                    } else {
+                        return elemA; // Atau return elemA + 0; jika Anda ingin menambahkan 0 pada elemen yang tidak terdefinisi
+                    }
+                });
+                
+                kehadiranPerOrg = gabungan;
+                
+                let countHadir = 0;
+                let countSakit = 0;
+                let countIzin = 0;
+                let countAlfa = 0;
+
+                for (let j = 0; j < rekapPerTgl.length; j++) {
+                    switch (rekapPerTgl[j]) {
+                        case "✔️":
+                            countHadir += 1;
+                            break;
+                        case "S":
+                            countSakit += 1;
+                            break;
+                        case "I":
+                            countIzin += 1;
+                            break;
+                        case "A":
+                            countAlfa += 1;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                
+                totalHadir.push(countHadir);
+                totalSakit.push(countSakit);
+                totalIzin.push(countIzin);
+                totalAlfa.push(countAlfa);
             }
-
         }
-
-        myChart.data.labels = labelTanggal.reverse();
-        myChart.data.datasets[0].data = totalHadir.reverse();
-        myChart.data.datasets[1].data = totalSakit.reverse();
-        myChart.data.datasets[2].data = totalIzin.reverse();
-        myChart.data.datasets[3].data = totalAlfa.reverse();
-
-        myChart.update();
+        
+        const hadir = document.getElementById('hadir');
+        const sakit = document.getElementById('sakit');
+        const izin = document.getElementById('izin');
+        const alfa = document.getElementById('alfa');
+        
+        hadir.textContent = totalHadir.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+        sakit.textContent = totalSakit.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+        izin.textContent = totalIzin.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+        alfa.textContent = totalAlfa.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+    } else {
+        console.error(`Data bulan ${bulanYangDipilih} tidak tersedia.`);
+    }
+    
+    // menambahkan tanggal ke char sekaligus format
+    pushLabelTanggal(dataTersimpan[bulan]);
+    
+    function pushLabelTanggal(data) {
+        for (let k = 0; k < data.length - 1; k++) {
+            const dateString = data[k][0]['tanggal'];
+            labelTanggal.push(`${dateString}`);
+        }
+    }
+    
+    // menambahkan jumlah latihan
+    const jumlahLatihan = document.getElementById('jumlahLatihan');
+    jumlahLatihan.textContent = labelTanggal.length;
+    
+    // mencari top Leaderboard Alfa
+    findTopLeaderboard(kehadiranPerOrg, "A");
+    const topAlfaIndex = topAlfa.map(item => item.index);
+    const topAlfaCount = topAlfa.map(item => item.count);
+    
+    for (let i = 1; i <= 5; i++) {
+        const persentase = 100 - Math.round(topAlfaCount[i - 1] / labelTanggal.length * 100);
+        const topAlfaElement = document.getElementById(`topAlfa${i}`).getElementsByTagName("th")[0];
+        const totalAlfaElement = document.getElementById(`totalTopAlfa${i}`);
+        const textPersentaseTopAlfa = document.getElementById(`textPersentaseTopAlfa${i}`);
+        const persentaseTopAlfa = document.getElementById(`persentaseTopAlfa${i}`);
+        
+        function generateColor(percent) {
+            let color = '';
+            if (percent < 30) {
+                color = "rgb(255, 0, 0)";
+            } else if (percent >= 30 && percent < 50) {
+                color = "rgb(255, 255, 0)";
+            } else if (percent >= 50 && percent < 85) {
+                color = "rgb(59, 130, 246)";
+            } else {
+                color = "rgb(16, 185, 129)";
+            }
+            return color;
+        }
+        
+        if (isNaN(persentase)) {
+            topAlfaElement.textContent = namaAnggota[i - 1];
+            totalAlfaElement.textContent = 0;
+            textPersentaseTopAlfa.textContent = "0%";
+            persentaseTopAlfa.style = `width: 0%`;
+        } else {
+            topAlfaElement.textContent = namaAnggota[topAlfaIndex[i - 1]];
+            totalAlfaElement.textContent = topAlfaCount[i - 1];
+            textPersentaseTopAlfa.textContent = persentase + "%";
+            persentaseTopAlfa.style = `width: ${persentase}%`;
+            persentaseTopAlfa.style.backgroundColor = generateColor(persentase);
+        }
+    }
+    
+    updateChart(labelTanggal.reverse(), totalHadir.reverse(), totalSakit.reverse(), totalIzin.reverse(), totalAlfa.reverse());
 }
 
-
+function updateChart(labels, dataHadir, dataSakit, dataIzin, dataAlfa) {
+    myChart.data.labels = labels;
+    myChart.data.datasets[0].data = dataHadir;
+    myChart.data.datasets[1].data = dataSakit;
+    myChart.data.datasets[2].data = dataIzin;
+    myChart.data.datasets[3].data = dataAlfa;
+    myChart.update();
+}
 
 // start: Chart
 const myChart = new Chart(document.getElementById('order-chart'), {
     type: 'line',
     data: {
-        labels: labelTanggal.reverse(),
+        labels: [],
         datasets: [
             {
                 label: 'Hadir',
-                data: totalHadir.reverse(),
+                data: [],
                 borderWidth: 1,
                 fill: true,
                 pointBackgroundColor: 'rgb(59, 130, 246)',
@@ -461,17 +469,17 @@ const myChart = new Chart(document.getElementById('order-chart'), {
             },
             {
                 label: 'Sakit',
-                data: totalSakit.reverse(),
+                data: [],
                 borderWidth: 1,
                 fill: true,
                 pointBackgroundColor: 'rgb(255, 255, 0)',
                 borderColor: 'rgb(255, 255, 0)',
-                backgroundColor: 'rgb(59 130 246 / .05)',
+                backgroundColor: 'rgb(255 255 0 / .05)',
                 tension: .2
             },
             {
                 label: 'Izin',
-                data: totalIzin.reverse(),
+                data: [],
                 borderWidth: 1,
                 fill: true,
                 pointBackgroundColor: 'rgb(16, 185, 129)',
@@ -481,7 +489,7 @@ const myChart = new Chart(document.getElementById('order-chart'), {
             },
             {
                 label: 'Alfa',
-                data: totalAlfa.reverse(),
+                data: [],
                 borderWidth: 1,
                 fill: true,
                 pointBackgroundColor: 'rgb(244, 63, 94)',
@@ -498,8 +506,9 @@ const myChart = new Chart(document.getElementById('order-chart'), {
             }
         }
     }
-})
+});
 // end: Chart
+
 
 
 // fetch('https://script.google.com/macros/s/AKfycbyap6NPMSjH6FI2R-Genpx83fzNDenULA8FOXmaK1texVt32npRw4sHhfUunbeTMCqp/exec', {
