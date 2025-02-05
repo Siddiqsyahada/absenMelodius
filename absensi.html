@@ -428,6 +428,27 @@ async function sendToStaff(message) {
         .catch(error => console.error('Error:', error));
 }
 
+
+function sendToBotTelegram(text){
+  fetch('https://api.telegram.org/bot6725187049:AAGhX3hlsKZOBL113OpPkWfVc-OzkCSdpqI/sendMessage', {
+    redirect: "follow",
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      chat_id: -4155828511,
+      text: text,
+    }),
+  }).then(response => response.json()).then(data => {
+    console.log('response', data);
+  })
+  .catch(error => {
+    console.error('Error:', error)
+  })
+}
+
+
 const btnSimpan = document.getElementById('btnSimpan');
 
 
@@ -511,8 +532,8 @@ Berikut link file Kehadiran lengkapnya :
 https://docs.google.com/spreadsheets/d/1pl0D4NyboRX7co0xBxsRrfncXAaOZ5j00gAtGPOchRg/edit?usp=sharing` 
             console.log(dataKehadiranLengkap)
             console.log(rekapitulasiHariIni)
-            sendToStaff(rekapitulasiHariIni)
-            
+            sendToBotTelegram(rekapitulasiHariIni)
+        
             
             fetch('https://script.google.com/macros/s/AKfycbyap6NPMSjH6FI2R-Genpx83fzNDenULA8FOXmaK1texVt32npRw4sHhfUunbeTMCqp/exec', {
                 redirect: "follow",
